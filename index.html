@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=600, initial-scale=1.0">
 <title>Personagem com Rádio</title>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <style>
     body {
         margin: 0;
@@ -21,10 +22,9 @@
         background: url('r.png') no-repeat center center;
         background-size: cover;
     }
-    /* Rádio ocupa o corpo do personagem */
     .radio {
         position: absolute;
-        top: 70%; /* ajusta para a barriga */
+        top: 70%;
         left: 56%;
         width: 250px;
         height: 280px;
@@ -38,7 +38,6 @@
         flex-direction: column;
         align-items: center;
     }
-    /* Tela do rádio */
     .display {
         width: 90%;
         height: 60px;
@@ -53,7 +52,6 @@
         margin-bottom: 12px;
         text-shadow: 0 0 5px #000;
     }
-    /* Campos */
     .input-group {
         width: 100%;
         display: flex;
@@ -70,7 +68,6 @@
         background: #111;
         color: white;
     }
-    /* Botões */
     button {
         padding: 8px;
         margin-top: 6px;
@@ -96,11 +93,10 @@
 </head>
 <body>
     <div class="container">
-        <!-- Rádio central ocupando barriga -->
         <div class="radio">
-            <div class="display" id="radioDisplay">Canal 1</div>
+            <div class="display" id="radioDisplay">Conectando...</div>
             <div class="input-group">
-                <input type="text" id="senderId" placeholder="ID Envio">
+                <input type="text" id="senderId" placeholder="Meu ID" readonly>
                 <input type="text" id="receiverId" placeholder="ID Recepção">
             </div>
             <button class="ptt" onclick="pushToTalk()">PTT</button>
@@ -110,12 +106,52 @@
 
 <script>
     let currentChannel = 1;
+    let peer;
+    let callConn;
+
+    // Inicializa PeerJS
+    peer = new Peer({
+        host: '0.peerjs.com',
+        port: 443,
+        path: '/',
+        secure: true
+    });
+
+    peer.on('open', function(id) {
+        document.getElementById('senderId').value = id;
+        document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
+    });
+
+    // Receber chamadas
+    peer.on('call', function(call) {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+            call.answer(stream);
+            call.on('stream', function(remoteStream) {
+                let audio = new Audio();
+                audio.srcObject = remoteStream;
+                audio.play();
+            });
+        });
+    });
+
     function pushToTalk() {
-        const sender = document.getElementById('senderId').value || "Desconhecido";
-        const receiver = document.getElementById('receiverId').value || "Todos";
+        const receiverId = document.getElementById('receiverId').value;
+        if (!receiverId) {
+            alert('Digite o ID de recepção para falar.');
+            return;
+        }
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+            let call = peer.call(receiverId, stream);
+            call.on('stream', function(remoteStream) {
+                let audio = new Audio();
+                audio.srcObject = remoteStream;
+                audio.play();
+            });
+        });
         document.getElementById('radioDisplay').innerText = 
-            `TX ${sender} -> ${receiver} (Canal ${currentChannel})`;
+            `TX ${document.getElementById('senderId').value} -> ${receiverId} (Canal ${currentChannel})`;
     }
+
     function changeChannel() {
         currentChannel++;
         if (currentChannel > 10) currentChannel = 1;
