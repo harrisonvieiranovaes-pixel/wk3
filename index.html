@@ -6,31 +6,33 @@
 <title>Walkie Talkie Fácil</title>
 <style>
   body {
-    background-color: #111;
-    color: white;
-    font-family: Arial, sans-serif;
-    text-align: center;
+    background-color: #000;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
   }
   .container {
     position: relative;
     width: 600px;
     height: 900px;
-    margin: auto;
     background: url("r.png") no-repeat center;
     background-size: cover;
   }
   .painel {
     position: absolute;
-    top: 340px; /* ajusta para centralizar no "barriga" */
-    left: 90px; /* ajusta horizontalmente */
-    width: 420px; /* largura do espaço branco */
-    height: 400px; /* altura aproximada do espaço branco */
+    top: 420px; /* ajustado para descer mais */
+    left: 85px; /* ajustado para alinhar horizontalmente */
+    width: 430px; /* largura exata da barriga */
+    height: 350px; /* altura do espaço branco */
     background: rgba(34,34,34,0.9);
     border-radius: 10px;
     padding: 15px;
     box-sizing: border-box;
+    color: white;
+    text-align: center;
   }
   input {
     padding: 8px;
