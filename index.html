@@ -107,10 +107,12 @@
 <script>
     let currentChannel = 1;
     let peer;
-    let callConn;
 
-    // Inicializa PeerJS
-    peer = new Peer({
+    // Gera um ID de 1 a 10
+    const myId = Math.floor(Math.random() * 10) + 1;
+
+    // Inicializa PeerJS com ID numérico pequeno
+    peer = new Peer(String(myId), {
         host: '0.peerjs.com',
         port: 443,
         path: '/',
