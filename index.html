@@ -111,13 +111,14 @@
         </div>
     </div>
 
-<audio id="staticOn" src="static-on.mp3"></audio>
-<audio id="staticOff" src="static-off.mp3"></audio>
+<!-- Sons -->
+<audio id="beepOn" src="ptt-on.mp3"></audio>
+<audio id="beepOff" src="ptt-off.mp3"></audio>
 
 <script>
     let currentChannel = 1;
     let peer;
-    let currentMode = "PTT"; // ou "Ligação"
+    let currentMode = "PTT";
     let myCall = null;
 
     // ID pequeno de 1 a 10
@@ -159,17 +160,17 @@
 
     function startPTT() {
         if (currentMode !== "PTT") return;
-        const staticOn = document.getElementById('staticOn');
-        staticOn.currentTime = 0;
-        staticOn.play();
+        const beepOn = document.getElementById('beepOn');
+        beepOn.currentTime = 0;
+        beepOn.play();
         startCall();
     }
 
     function stopPTT() {
         if (currentMode !== "PTT") return;
-        const staticOff = document.getElementById('staticOff');
-        staticOff.currentTime = 0;
-        staticOff.play();
+        const beepOff = document.getElementById('beepOff');
+        beepOff.currentTime = 0;
+        beepOff.play();
         endCall();
     }
 
@@ -207,9 +208,11 @@
         if (currentMode === "PTT") {
             currentMode = "Ligação";
             document.querySelector('.mode').innerText = "Modo: Ligação";
+            startCall(); // inicia ligação contínua
         } else {
             currentMode = "PTT";
             document.querySelector('.mode').innerText = "Modo: PTT";
+            endCall(); // encerra ligação contínua
         }
     }
 </script>
