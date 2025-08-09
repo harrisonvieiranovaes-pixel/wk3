@@ -27,7 +27,7 @@
         top: 70%;
         left: 56%;
         width: 250px;
-        height: 280px;
+        height: 320px;
         transform: translate(-50%, -50%);
         background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
         border: 4px solid #444;
@@ -89,6 +89,12 @@
         width: 100%;
         box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     }
+    .mode {
+        background: green;
+        color: white;
+        width: 100%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
 </style>
 </head>
 <body>
@@ -99,19 +105,24 @@
                 <input type="text" id="senderId" placeholder="Meu ID" readonly>
                 <input type="text" id="receiverId" placeholder="ID Recepção">
             </div>
-            <button class="ptt" onclick="pushToTalk()">PTT</button>
+            <button class="ptt" id="pttBtn">PTT</button>
             <button class="channel" onclick="changeChannel()">Trocar Canal</button>
+            <button class="mode" onclick="toggleMode()">Modo: PTT</button>
         </div>
     </div>
+
+<audio id="staticOn" src="static-on.mp3"></audio>
+<audio id="staticOff" src="static-off.mp3"></audio>
 
 <script>
     let currentChannel = 1;
     let peer;
+    let currentMode = "PTT"; // ou "Ligação"
+    let myCall = null;
 
-    // Gera um ID de 1 a 10
+    // ID pequeno de 1 a 10
     const myId = Math.floor(Math.random() * 10) + 1;
 
-    // Inicializa PeerJS com ID numérico pequeno
     peer = new Peer(String(myId), {
         host: '0.peerjs.com',
         port: 443,
@@ -124,40 +135,82 @@
         document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
     });
 
-    // Receber chamadas
     peer.on('call', function(call) {
         navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
             call.answer(stream);
             call.on('stream', function(remoteStream) {
-                let audio = new Audio();
-                audio.srcObject = remoteStream;
-                audio.play();
+                playAudio(remoteStream);
             });
         });
     });
 
-    function pushToTalk() {
+    function playAudio(stream) {
+        let audio = new Audio();
+        audio.srcObject = stream;
+        audio.play();
+    }
+
+    // Botão PTT com eventos de pressionar/soltar
+    const pttBtn = document.getElementById('pttBtn');
+    pttBtn.addEventListener('mousedown', startPTT);
+    pttBtn.addEventListener('mouseup', stopPTT);
+    pttBtn.addEventListener('touchstart', startPTT);
+    pttBtn.addEventListener('touchend', stopPTT);
+
+    function startPTT() {
+        if (currentMode !== "PTT") return;
+        const staticOn = document.getElementById('staticOn');
+        staticOn.currentTime = 0;
+        staticOn.play();
+        startCall();
+    }
+
+    function stopPTT() {
+        if (currentMode !== "PTT") return;
+        const staticOff = document.getElementById('staticOff');
+        staticOff.currentTime = 0;
+        staticOff.play();
+        endCall();
+    }
+
+    function startCall() {
         const receiverId = document.getElementById('receiverId').value;
         if (!receiverId) {
-            alert('Digite o ID de recepção para falar.');
+            alert('Digite o ID de recepção.');
             return;
         }
         navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-            let call = peer.call(receiverId, stream);
-            call.on('stream', function(remoteStream) {
-                let audio = new Audio();
-                audio.srcObject = remoteStream;
-                audio.play();
+            myCall = peer.call(receiverId, stream);
+            myCall.on('stream', function(remoteStream) {
+                playAudio(remoteStream);
             });
         });
-        document.getElementById('radioDisplay').innerText = 
-            `TX ${document.getElementById('senderId').value} -> ${receiverId} (Canal ${currentChannel})`;
+        document.getElementById('radioDisplay').innerText =
+            `TX ${myId} -> ${receiverId} (Canal ${currentChannel})`;
+    }
+
+    function endCall() {
+        if (myCall) {
+            myCall.close();
+            myCall = null;
+        }
+        document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
     }
 
     function changeChannel() {
         currentChannel++;
         if (currentChannel > 10) currentChannel = 1;
         document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
+    }
+
+    function toggleMode() {
+        if (currentMode === "PTT") {
+            currentMode = "Ligação";
+            document.querySelector('.mode').innerText = "Modo: Ligação";
+        } else {
+            currentMode = "PTT";
+            document.querySelector('.mode').innerText = "Modo: PTT";
+        }
     }
 </script>
 </body>
