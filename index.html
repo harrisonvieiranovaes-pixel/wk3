@@ -1,220 +1,234 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=600, initial-scale=1.0">
-<title>Personagem com Rádio</title>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-<style>
-body {
-margin: 0;
-padding: 0;
-background: #000;
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-}
-.container {
-position: relative;
-width: 600px;
-height: 900px;
-background: url('r.png') no-repeat center center;
-background-size: cover;
-}
-.radio {
-position: absolute;
-top: 70%;
-left: 56%;
-width: 250px;
-height: 320px;
-transform: translate(-50%, -50%);
-background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
-border: 4px solid #444;
-border-radius: 15px;
-box-shadow: 0 0 15px rgba(0,0,0,0.6);
-padding: 12px;
-display: flex;
-flex-direction: column;
-align-items: center;
-}
-.display {
-width: 90%;
-height: 60px;
-background: linear-gradient(180deg, #00ff00, #007700);
-color: #fff;
-font-family: monospace;
-font-size: 16px;
-text-align: center;
-line-height: 60px;
-border: 2px solid #333;
-border-radius: 6px;
-margin-bottom: 12px;
-text-shadow: 0 0 5px #000;
-}
-.input-group {
-width: 100%;
-display: flex;
-justify-content: space-between;
-margin-bottom: 10px;
-}
-.input-group input {
-width: 48%;
-padding: 5px;
-font-size: 14px;
-text-align: center;
-border-radius: 4px;
-border: 1px solid #666;
-background: #111;
-color: white;
-}
-button {
-padding: 8px;
-margin-top: 6px;
-font-size: 14px;
-font-weight: bold;
-cursor: pointer;
-border: none;
-border-radius: 20px;
-}
-.ptt {
-background: red;
-color: white;
-width: 100%;
-box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-.channel {
-background: blue;
-color: white;
-width: 100%;
-box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-.mode {
-background: green;
-color: white;
-width: 100%;
-box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=600, initial-scale=1.0">
+    <title>Personagem com Rádio</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            position: relative;
+            width: 600px;
+            height: 900px;
+            background: url('r.png') no-repeat center center;
+            background-size: cover;
+        }
+        .radio {
+            position: absolute;
+            top: 70%;
+            left: 56%;
+            width: 250px;
+            height: 320px;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border: 4px solid #444;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.6);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .display {
+            width: 90%;
+            height: 60px;
+            background: linear-gradient(180deg, #00ff00, #007700);
+            color: #fff;
+            font-family: monospace;
+            font-size: 16px;
+            text-align: center;
+            line-height: 60px;
+            border: 2px solid #333;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 5px #000;
+        }
+        .input-group {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .input-group input {
+            width: 48%;
+            padding: 5px;
+            font-size: 14px;
+            text-align: center;
+            border-radius: 4px;
+            border: 1px solid #666;
+            background: #111;
+            color: white;
+        }
+        button {
+            padding: 8px;
+            margin-top: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 20px;
+        }
+        .ptt {
+            background: red;
+            color: white;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+        .channel {
+            background: blue;
+            color: white;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+        .mode {
+            background: green;
+            color: white;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<div class="radio">
-<div class="display" id="radioDisplay">Conectando...</div>
-<div class="input-group">
-<input type="text" id="senderId" placeholder="Meu ID" readonly>
-<input type="text" id="receiverId" placeholder="ID Recepção">
-</div>
-<button class="ptt" id="pttBtn">PTT</button>
-<button class="channel" onclick="changeChannel()">Trocar Canal</button>
-<button class="mode" onclick="toggleMode()">Modo: PTT</button>
-</div>
-</div>
+    <div class="container">
+        <div class="radio">
+            <div class="display" id="radioDisplay">Conectando...</div>
+            <div class="input-group">
+                <input type="number" id="senderId" placeholder="Meu ID (1-10)" min="1" max="10" value="1">
+                <input type="text" id="receiverId" placeholder="ID Recepção">
+            </div>
+            <button class="ptt" id="pttBtn">PTT</button>
+            <button class="channel" onclick="changeChannel()">Trocar Canal</button>
+            <button class="mode" onclick="toggleMode()">Modo: PTT</button>
+        </div>
+    </div>
 
-<!-- Sons -->
-<audio id="beepOn" src="ptt-on.mp3"></audio>
-<audio id="beepOff" src="ptt-off.mp3"></audio>
+    <!-- Sons -->
+    <audio id="beepOn" src="ptt-on.mp3"></audio>
+    <audio id="beepOff" src="ptt-off.mp3"></audio>
 
-<script>
-let currentChannel = 1;
-let peer;
-let currentMode = "PTT";
-let myCall = null;
+    <script>
+        let currentChannel = 1;
+        let peer;
+        let currentMode = "PTT";
+        let myCall = null;
+        let isTransmitting = false;
 
-// ID pequeno de 1 a 10
-const myId = Math.floor(Math.random() * 10) + 1;
+        // ID fixo escolhido pelo usuário
+        const myId = parseInt(document.getElementById('senderId').value);
 
-peer = new Peer(String(myId), {
-host: '0.peerjs.com',
-port: 443,
-path: '/',
-secure: true
-});
+        peer = new Peer(String(myId), {
+            host: '0.peerjs.com',
+            port: 443,
+            path: '/',
+            secure: true
+        });
 
-peer.on('open', function(id) {
-document.getElementById('senderId').value = id;
-document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
-});
+        peer.on('open', function(id) {
+            document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
+        });
 
-peer.on('call', function(call) {
-navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-call.answer(stream);
-call.on('stream', function(remoteStream) {
-playAudio(remoteStream);
-});
-});
-});
+        peer.on('call', function(call) {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+                call.answer(stream);
+                call.on('stream', function(remoteStream) {
+                    playAudio(remoteStream);
+                });
+            });
+        });
 
-function playAudio(stream) {
-let audio = new Audio();
-audio.srcObject = stream;
-audio.play();
-}
+        function playAudio(stream) {
+            let audio = new Audio();
+            audio.srcObject = stream;
+            audio.play();
+        }
 
-// Botão PTT com eventos de pressionar/soltar
-const pttBtn = document.getElementById('pttBtn');
-pttBtn.addEventListener('mousedown', startPTT);
-pttBtn.addEventListener('mouseup', stopPTT);
-pttBtn.addEventListener('touchstart', startPTT);
-pttBtn.addEventListener('touchend', stopPTT);
+        // Botão PTT com eventos de pressionar/soltar
+        const pttBtn = document.getElementById('pttBtn');
+        pttBtn.addEventListener('touchstart', startPTT);
+        pttBtn.addEventListener('touchend', stopPTT);
+        pttBtn.addEventListener('mousedown', startPTT);
+        pttBtn.addEventListener('mouseup', stopPTT);
 
-function startPTT() {
-if (currentMode !== "PTT") return;
-const beepOn = document.getElementById('beepOn');
-beepOn.currentTime = 0;
-beepOn.play();
-startCall();
-}
+        function startPTT() {
+            if (currentMode !== "PTT" || isTransmitting) return;
+            const beepOn = document.getElementById('beepOn');
+            beepOn.currentTime = 0;
+            beepOn.play();
+            startCall();
+            isTransmitting = true;
+        }
 
-function stopPTT() {
-if (currentMode !== "PTT") return;
-const beepOff = document.getElementById('beepOff');
-beepOff.currentTime = 0;
-beepOff.play();
-endCall();
-}
+        function stopPTT() {
+            if (isTransmitting) {
+                const beepOff = document.getElementById('beepOff');
+                beepOff.currentTime = 0;
+                beepOff.play();
+                endCall();
+                isTransmitting = false;
+            }
+        }
 
-function startCall() {
-const receiverId = document.getElementById('receiverId').value;
-if (!receiverId) {
-alert('Digite o ID de recepção.');
-return;
-}
-navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-myCall = peer.call(receiverId, stream);
-myCall.on('stream', function(remoteStream) {
-playAudio(remoteStream);
-});
-});
-document.getElementById('radioDisplay').innerText =
-`TX ${myId} -> ${receiverId} (Canal ${currentChannel})`;
-}
+        function startCall() {
+            const receiverId = document.getElementById('receiverId').value;
+            if (!receiverId) {
+                alert('Digite o ID de recepção.');
+                return;
+            }
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+                myCall = peer.call(receiverId, stream);
+                myCall.on('stream', function(remoteStream) {
+                    playAudio(remoteStream);
+                });
+            });
+            document.getElementById('radioDisplay').innerText =
+                `TX ${myId} -> ${receiverId} (Canal ${currentChannel})`;
+        }
 
-function endCall() {
-if (myCall) {
-myCall.close();
-myCall = null;
-}
-document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
-}
+        function endCall() {
+            if (myCall) {
+                myCall.close();
+                myCall = null;
+            }
+            document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
+        }
 
-function changeChannel() {
-currentChannel++;
-if (currentChannel > 10) currentChannel = 1;
-document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
-}
+        function changeChannel() {
+            currentChannel++;
+            if (currentChannel > 10) currentChannel = 1;
+            document.getElementById('radioDisplay').innerText = `Canal ${currentChannel}`;
+        }
 
-function toggleMode() {
-if (currentMode === "PTT") {
-currentMode = "Ligação";
-document.querySelector('.mode').innerText = "Modo: Ligação";
-startCall(); // inicia ligação contínua
-} else {
-currentMode = "PTT";
-document.querySelector('.mode').innerText = "Modo: PTT";
-endCall(); // encerra ligação contínua
-}
-}
-</script>
+        function toggleMode() {
+            if (currentMode === "PTT") {
+                currentMode = "Ligação";
+                document.querySelector('.mode').innerText = "Modo: Ligação";
+            } else {
+                currentMode = "PTT";
+                document.querySelector('.mode').innerText = "Modo: PTT";
+            }
+        }
+
+        document.getElementById('senderId').addEventListener('input', function() {
+            const newId = parseInt(this.value);
+            if (newId >= 1 && newId <= 10) {
+                peer.destroy();
+                peer = new Peer(String(newId), {
+                    host: '0.peerjs.com',
+                    port: 443,
+                    path: '/',
+                    secure: true
+                });
+            }
+        });
+    </script>
 </body>
 </html>
